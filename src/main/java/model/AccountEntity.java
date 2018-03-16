@@ -8,16 +8,6 @@ public class AccountEntity {
 	private double balance;
 	private int maxWithdrawAmount;
 	private int minWithdrawAmount;
-	
-	public AccountEntity(String id, long creationDate, long lastOperationDate, double balance, int maxWithdrawAmount,
-			int minWithdrawAmount) {
-		this.id = id;
-		this.creationDate = creationDate;
-		this.lastOperationDate = lastOperationDate;
-		this.balance = balance;
-		this.maxWithdrawAmount = maxWithdrawAmount;
-		this.minWithdrawAmount = minWithdrawAmount;
-	}
 
 	public String getId() {
 		return id;

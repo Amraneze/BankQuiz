@@ -12,6 +12,7 @@ public interface UserServices {
 	UserEntity addUser(UserEntity user) throws UserAlreadyExistException;
 	UserEntity updateUser(UserEntity user) throws UserDoesNotExistException;
 	boolean deleteUser(String userId) throws UserDoesNotExistException;
+	boolean unlinkAccountFromUser(String userId, String accountId);
 	UserEntity getUserById(String userId);
 	List<UserEntity> getUsers();
 	TreeSet<String> getUserAccounts(String userId);

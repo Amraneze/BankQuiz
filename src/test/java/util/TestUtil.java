@@ -6,6 +6,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import model.AccountEntity;
 import model.GenericBuilder;
 import model.UserEntity;
 
@@ -25,6 +26,10 @@ public class TestUtil {
     private static int getRandomInRange(int min, int max) {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
+    
+    public static double getRandomDoubleInRange(double min, double max) {
+        return ThreadLocalRandom.current().nextDouble(min, max + 1);
+    }
 
     public static String generatedUUID() {
         return UUID.randomUUID().toString();
@@ -43,6 +48,17 @@ public class TestUtil {
     			.with(UserEntity::setPhone, phones.get(random))
     			.with(UserEntity::setEmail, emails.get(random))
     			.with(UserEntity::setAccounts, new TreeSet<>())
+    			.build();
+    }
+
+    public static AccountEntity generateAccount() {
+    	return GenericBuilder.of(AccountEntity::new)
+    			.with(AccountEntity::setId, generatedUUID())
+    			.with(AccountEntity::setCreationDate, System.currentTimeMillis())
+    			.with(AccountEntity::setLastOperationDate, System.currentTimeMillis())
+    			.with(AccountEntity::setBalance, getRandomDoubleInRange(-1000, 10000))
+    			.with(AccountEntity::setMaxWithdrawAmount, getRandomInRange(400, 1000))
+    			.with(AccountEntity::setMinWithdrawAmount, getRandomInRange(10, 50))
     			.build();
     }
 }

@@ -11,8 +11,10 @@ public interface AccountServices {
 	AccountEntity addAccount(String userId, AccountEntity account);
 	AccountEntity addAccount(AccountEntity account) throws AccountAlreadyExistException;
 	AccountEntity updateAccount(AccountEntity account) throws AccountDoesNotExistException;
-	boolean deleteAccount(String userId, String accountId) throws AccountDoesNotExistException;
-	AccountEntity linkAccountToUser(String userId, String accountId);
+	boolean deleteAccountFromUser(String userId, String accountId) throws AccountDoesNotExistException;
+	boolean deleteAccount(String accountId) throws AccountDoesNotExistException;
+	void deleteAllAccounts();
+	AccountEntity linkAccountToUser(String userId, String accountId) throws AccountDoesNotExistException;
 	List<AccountEntity> getAccounts();
 	List<AccountEntity> getAccountsOfUser(String userId);
 	AccountEntity withdrawMoney(String accountId, double money);

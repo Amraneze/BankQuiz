@@ -14,38 +14,35 @@ import model.UserEntity;
 
 public class MockedData {
 
-	private HashMap<String, UserEntity> users = new HashMap<>();
-	private HashMap<String, AccountEntity> accounts = new HashMap<>();
+	private static HashMap<String, UserEntity> users = new HashMap<>();
+	private static HashMap<String, AccountEntity> accounts = new HashMap<>();
 	
 	public HashMap<String, UserEntity> getUsers() {
-		return this.users;
+		return users;
 	}
 	
 	public UserEntity getUser(String userId) {
-		return this.users.get(userId);
+		return users.get(userId);
 	}
 	
 	public UserEntity addUser(UserEntity user) throws UserAlreadyExistException {
-		if (!this.users.containsKey(user.getId()))
+		if (users.containsKey(user.getId()))
 			throw new UserAlreadyExistException();
-		this.users.put(user.getId(), user);
-		return this.users.get(user.getId());
+		users.put(user.getId(), user);
+		return users.get(user.getId());
 	}
 	
 	public UserEntity updateUser(UserEntity user) throws UserDoesNotExistException {
-		//UserEntity existedUser = this.users.get(user.getId());
-		//if (existedUser == null)
-		//	return existedUser;
-		if (!this.users.containsKey(user.getId())) 
+		if (!users.containsKey(user.getId())) 
 			throw new UserDoesNotExistException();
-		return this.users.computeIfPresent(user.getId(), (id, oldUser) -> user);
+		return users.computeIfPresent(user.getId(), (id, oldUser) -> user);
 	}
 	
 	public boolean removeUser(String userId) throws UserDoesNotExistException {
-		if (!this.users.containsKey(userId)) 
+		if (!users.containsKey(userId)) 
 			throw new UserDoesNotExistException();
-		this.users.remove(userId);
-		return this.users.get(userId) == null;
+		users.remove(userId);
+		return users.get(userId) == null;
 	}
 	
 	public HashMap<String, AccountEntity> getAccounts() {
@@ -53,72 +50,89 @@ public class MockedData {
 	}
 	
 	public AccountEntity getAccount(String accountId) {
-		return this.accounts.get(accountId);
+		return accounts.get(accountId);
 	}
 	
 	public AccountEntity addAccount(AccountEntity account) throws AccountAlreadyExistException {
-		if (!this.accounts.containsKey(account.getId()))
+		if (accounts.containsKey(account.getId()))
 			throw new AccountAlreadyExistException();
-		this.accounts.put(account.getId(), account);
-		return this.accounts.get(account.getId());
+		accounts.put(account.getId(), account);
+		return accounts.get(account.getId());
 	}
 	
 	public AccountEntity addAccount(String userId, AccountEntity account) {
-		this.accounts.put(account.getId(), account);
-		TreeSet<String> accounts = this.users.get(userId).getAccounts();
-		UserEntity user = this.users.get(userId);
-		accounts.add(account.getId());
-		user.setAccounts(accounts);
-		//updateUser(user);
-		this.users.computeIfPresent(user.getId(), (id, oldUser) -> user);
-		return this.accounts.get(account.getId());
+		accounts.put(account.getId(), account);
+		TreeSet<String> oldAccounts = users.get(userId).getAccounts();
+		UserEntity user = users.get(userId);
+		oldAccounts.add(account.getId());
+		user.setAccounts(oldAccounts);
+		users.computeIfPresent(user.getId(), (id, oldUser) -> user);
+		return accounts.get(account.getId());
 	}
 	
 	public AccountEntity updateAccount(AccountEntity account) throws AccountDoesNotExistException {
-		if (!this.accounts.containsKey(account.getId()))
+		if (!accounts.containsKey(account.getId()))
 			throw new AccountDoesNotExistException();
-		//AccountEntity existedAccount = this.accounts.get(account.getId());
-		//if (existedAccount == null)
-		//	return existedAccount;
-		return this.accounts.computeIfPresent(account.getId(), (id, oldAccount) -> account);
+		return accounts.computeIfPresent(account.getId(), (id, oldAccount) -> account);
 	}
 	
 	public boolean deleteAccount(String userId, String accountId) throws AccountDoesNotExistException {
-		if (!this.accounts.containsKey(accountId))
+		if (!accounts.containsKey(accountId))
 			throw new AccountDoesNotExistException();
-		this.accounts.remove(accountId);
-		UserEntity user = this.users.get(userId);
+		accounts.remove(accountId);
+		UserEntity user = users.get(userId);
 		TreeSet<String> newAccounts = user.getAccounts();
 		newAccounts.remove(accountId);
 		user.setAccounts(newAccounts);
-		//updateUser(user);
-		this.users.computeIfPresent(user.getId(), (id, oldUser) -> user);
-		return this.accounts.get(accountId) == null && this.users.get(userId).getAccounts().contains(accountId);
+		users.computeIfPresent(user.getId(), (id, oldUser) -> user);
+		return accounts.get(accountId) == null && users.get(userId).getAccounts().contains(accountId);
+	}
+	
+	
+	public boolean deleteAccount(String accountId) throws AccountDoesNotExistException {
+		if (!accounts.containsKey(accountId))
+			throw new AccountDoesNotExistException();
+		accounts.remove(accountId);
+		return accounts.get(accountId) == null;
 	}
 	
 	public List<AccountEntity> getAccountsOfUser(String userId) {
-		return this.users.get(userId).getAccounts().stream()
+		return users.get(userId).getAccounts().stream()
 				.map(accountId -> getAccount(accountId))
 				.collect(Collectors.toList());
 	}
 	
-	public AccountEntity linkAccountToUser(String userId, String accountId) {
-		return addAccount(userId, getAccount(accountId));
+	public AccountEntity linkAccountToUser(String userId, String accountId) throws AccountDoesNotExistException {
+		AccountEntity account = getAccount(accountId);
+		if (account == null)
+			throw new AccountDoesNotExistException(); 
+		return addAccount(userId, account);
 	}
 	
 	public AccountEntity withdrawMoney(String accountId, double money) {
 		AccountEntity account = getAccount(accountId);
 		account.setBalance(account.getBalance() - money);
-		return this.accounts.computeIfPresent(account.getId(), (id, oldAccount) -> account);
+		return accounts.computeIfPresent(account.getId(), (id, oldAccount) -> account);
 	}
 
 	public AccountEntity depositMoney(String accountId, double money) {
 		AccountEntity account = getAccount(accountId);
 		account.setBalance(account.getBalance() + money);
-		return this.accounts.computeIfPresent(account.getId(), (id, oldAccount) -> account);
+		return accounts.computeIfPresent(account.getId(), (id, oldAccount) -> account);
 	}
 	
 	public Double getSumOfAccountsOfUser(String userId) {
 		return getAccountsOfUser(userId).stream().mapToDouble(AccountEntity::getBalance).sum();
+	}
+
+	public boolean unlinkAccountFromUser(String userId, String accountId) {
+		UserEntity user = users.get(userId);
+		//We can do this because the variable is static
+		user.getAccounts().remove(accountId);
+		return user.getAccounts().contains(accountId);
+	}
+
+	public void deleteAllAccounts() {
+		accounts.clear();
 	}
 }

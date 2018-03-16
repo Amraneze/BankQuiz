@@ -48,4 +48,9 @@ public class UserServicesImpl implements UserServices {
 		return db.getSumOfAccountsOfUser(userId);
 	}
 
+	@Override
+	public boolean unlinkAccountFromUser(String userId, String accountId) {
+		return db.unlinkAccountFromUser(userId, accountId);
+	}
+
 }

@@ -28,12 +28,17 @@ public class AccountServicesImpl implements AccountServices {
 	}
 
 	@Override
-	public boolean deleteAccount(String userId, String accountId) throws AccountDoesNotExistException {
+	public boolean deleteAccountFromUser(String userId, String accountId) throws AccountDoesNotExistException {
 		return db.deleteAccount(userId, accountId);
+	}
+	
+	@Override
+	public boolean deleteAccount(String accountId) throws AccountDoesNotExistException {
+		return db.deleteAccount(accountId);
 	}
 
 	@Override
-	public AccountEntity linkAccountToUser(String userId, String accountId) {
+	public AccountEntity linkAccountToUser(String userId, String accountId) throws AccountDoesNotExistException {
 		return db.linkAccountToUser(userId, accountId);
 	}
 
@@ -55,5 +60,10 @@ public class AccountServicesImpl implements AccountServices {
 	@Override
 	public AccountEntity depositMoney(String accountId, double money) {
 		return db.depositMoney(accountId, money);
+	}
+
+	@Override
+	public void deleteAllAccounts() {
+		db.deleteAllAccounts();
 	}
 }
