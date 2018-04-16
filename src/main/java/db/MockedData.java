@@ -45,6 +45,10 @@ public class MockedData {
 		return users.get(userId) == null;
 	}
 	
+	public void removeAllUsers() {
+		users.clear();
+	}
+	
 	public HashMap<String, AccountEntity> getAccounts() {
 		return accounts;
 	}
@@ -88,6 +92,16 @@ public class MockedData {
 		return accounts.get(accountId) == null && users.get(userId).getAccounts().contains(accountId);
 	}
 	
+	public UserEntity unlinkAccountsFromUser(String userId) throws UserDoesNotExistException {
+		if (!users.containsKey(userId)) 
+			throw new UserDoesNotExistException();
+		UserEntity user = users.get(userId);
+		TreeSet<String> newAccounts = user.getAccounts();
+		newAccounts.clear();
+		user.setAccounts(newAccounts);
+		users.computeIfPresent(user.getId(), (id, oldUser) -> user);
+		return users.get(userId);
+	}
 	
 	public boolean deleteAccount(String accountId) throws AccountDoesNotExistException {
 		if (!accounts.containsKey(accountId))
@@ -121,7 +135,7 @@ public class MockedData {
 		return accounts.computeIfPresent(account.getId(), (id, oldAccount) -> account);
 	}
 	
-	public Double getSumOfAccountsOfUser(String userId) {
+	public double getSumOfAccountsOfUser(String userId) {
 		return getAccountsOfUser(userId).stream().mapToDouble(AccountEntity::getBalance).sum();
 	}
 

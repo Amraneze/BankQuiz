@@ -85,19 +85,19 @@ public class UserServiceTestCase {
     
     @Test
     @Sort(order = 7)
-    public void linkAccountsToUser() throws AccountDoesNotExistException, AccountAlreadyExistException {
+    public void linkAccountsToUser() throws AccountDoesNotExistException, AccountAlreadyExistException, UserDoesNotExistException {
     	for (int i = 0; i < 10; i++) {
     		AccountEntity newAccount = TestUtil.generateAccount();
     		accountServices.addAccount(newAccount);
     		accountServices.linkAccountToUser(generatedUser.getId(), newAccount.getId());
     	}
     	assertEquals(10, userServices.getUserById(generatedUser.getId()).getAccounts().size());
+    	userServices.unlinkAccountsFromUser(generatedUser.getId());
     }
     
     @Test
     @Sort(order = 8)
     public void sumOfAccountsOfUser() throws AccountDoesNotExistException, AccountAlreadyExistException {
-    	//accountServices.deleteAllAccounts();
     	double sum = 0;
     	for (int i = 0; i < 10; i++) {
     		AccountEntity newAccount = TestUtil.generateAccount();
@@ -105,8 +105,11 @@ public class UserServiceTestCase {
     		accountServices.addAccount(newAccount);
     		accountServices.linkAccountToUser(generatedUser.getId(), newAccount.getId());
     	}
-    	System.out.println("Sum "+sum+" size "+userServices.getUserById(generatedUser.getId()).getAccounts().size());
-    	assertEquals(sum, userServices.getSumOfAllAccountsOfUser(generatedUser.getId()));
+    	//XXX there is the issue for double, it will generate AssertionFailedError
+    	//we need add a third parameter as an epsilon to check if the difference between the two first params
+    	//is bigger than epsilon or not. For example we have the case of getting AssertFailed because 
+    	//sum equals 48322.32097428113 and the function getSumOfAllAccountsOfUser returns 48322.32097428114
+    	assertEquals(sum, userServices.getSumOfAllAccountsOfUser(generatedUser.getId()), 0.001);
     }
     
     @Test

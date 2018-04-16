@@ -27,6 +27,11 @@ public class UserServicesImpl implements UserServices {
 	public boolean deleteUser(String userId) throws UserDoesNotExistException {
 		return db.removeUser(userId);
 	}
+	
+	@Override
+	public void deleteAll() {
+		db.removeAllUsers();
+	}
 
 	@Override
 	public UserEntity getUserById(String userId) {
@@ -52,5 +57,9 @@ public class UserServicesImpl implements UserServices {
 	public boolean unlinkAccountFromUser(String userId, String accountId) {
 		return db.unlinkAccountFromUser(userId, accountId);
 	}
-
+	
+	@Override
+	public UserEntity unlinkAccountsFromUser(String userId) throws UserDoesNotExistException {
+		return db.unlinkAccountsFromUser(userId);
+	}
 }

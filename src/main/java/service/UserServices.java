@@ -13,10 +13,12 @@ public interface UserServices {
 	UserEntity updateUser(UserEntity user) throws UserDoesNotExistException;
 	boolean deleteUser(String userId) throws UserDoesNotExistException;
 	boolean unlinkAccountFromUser(String userId, String accountId);
+	UserEntity unlinkAccountsFromUser(String userId) throws UserDoesNotExistException;
 	UserEntity getUserById(String userId);
 	List<UserEntity> getUsers();
 	TreeSet<String> getUserAccounts(String userId);
 	double getSumOfAllAccountsOfUser(String userId);
+	void deleteAll();
 	
 	class Factory extends InjectableFactory<UserServices> {
 
